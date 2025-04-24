@@ -1,5 +1,8 @@
-body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+.layout_spacing {
+  @apply py-1 px-2 md:px-8 lg:px-56;
 }
