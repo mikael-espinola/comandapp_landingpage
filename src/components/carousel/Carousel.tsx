@@ -26,13 +26,16 @@ export default function Carousel() {
       >
         {images.map((src, index) => (
           <SwiperSlide key={index}>
-            <Image
-              src={src}
-              alt={`Slide ${index + 1}`}
-              width={300}
-              height={800}
-              className="mx-auto object-cover"
-            />
+            <div className="w-[250px] h-[500px] relative mx-auto">
+              <Image
+                src={src}
+                alt={`Slide ${index + 1}`}
+                height={800}
+                width={400}
+                priority={src === "/photo-01.jpg" ? true : false}
+                className="mx-auto object-cover"
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
