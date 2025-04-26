@@ -2,6 +2,7 @@
 import React, { FormEvent, useState } from "react";
 import Input from "../input/Input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const FormContact = () => {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ const FormContact = () => {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [sendingSuccessful, setSendingSuccessful] = useState(false);
+  const router = useRouter();
 
   const clearSpace = () => {
     setCompanyName("");
@@ -22,7 +24,36 @@ const FormContact = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // const data = { name: name, email: email, companyName: companyName,phone: phone,message: message,}; // TODO: Usar 'data' na função de envio de email
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    formData.append(
+      "service_id",
+      `${process.env.NEXT_PUBLIC_SERVICE_EMAIL_ID}`
+    );
+    formData.append(
+      "template_id",
+      `${process.env.NEXT_PUBLIC_TEMPLATE_EMAIL_ID}`
+    );
+    formData.append("user_id", `${process.env.NEXT_PUBLIC_PUBLIC_EMAIL_KEY}`);
+
+    fetch("https://api.emailjs.com/api/v1.0/email/send-form", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(`Erro na requisição: ${response.status} - ${text}`);
+          });
+        }
+        return response.text();
+      })
+      .then((data) => {
+        if (data === "OK") {
+          router.push("/contato/email-enviado");
+        }
+      });
 
     clearSpace();
 
@@ -45,6 +76,7 @@ const FormContact = () => {
         value={name}
         onChange={(event) => setName(event.target.value)}
         required
+        name="name"
       />
       <Input
         id="empresa"
@@ -55,6 +87,7 @@ const FormContact = () => {
         value={companyName}
         onChange={(event) => setCompanyName(event.target.value)}
         required
+        name="companyName"
       />
       <Input
         id="email"
@@ -65,6 +98,7 @@ const FormContact = () => {
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         required
+        name="email"
       />
       <Input
         id="phone"
@@ -75,18 +109,22 @@ const FormContact = () => {
         value={phone}
         onChange={(event) => setPhone(event.target.value)}
         required
+        name="phone"
       />
-      <p className="my-1">Como podemos te ajudar?</p>
-      <textarea
-        name="resume"
-        id="textResume"
-        className="w-full border min-h-35 p-2 text-sm my-1 rounded-md outline-offset-5"
-        onChange={(event) => setMessage(event.target.value)}
-        required
-        value={message}
-      ></textarea>
-
-      <div className="flex justify-center gap-2 ">
+      <div className="flex flex-col">
+        <label htmlFor="textResume" className="my-1">
+          Como podemos te ajudar?
+        </label>
+        <textarea
+          name="message"
+          id="textResume"
+          className="w-full border min-h-35 p-2 text-sm my-1 rounded-md outline-offset-5 "
+          onChange={(event) => setMessage(event.target.value)}
+          required
+          value={message}
+        ></textarea>
+      </div>
+      <div className="flex justify-center gap-2 my-2 ">
         <button
           type="submit"
           className={`bg-[#2b1461] text-white border rounded-md py-1 px-4 cursor-pointer ${
@@ -95,11 +133,13 @@ const FormContact = () => {
         >
           {sendingSuccessful ? "Enviado" : "Enviar"}
         </button>
-        <Link href={"/"}>
-          <p className="bg-[#5d3ea8] text-white border rounded-md py-1 px-4 cursor-pointer">
-            Voltar
-          </p>
-        </Link>
+        {!sendingSuccessful && (
+          <Link href={"/"}>
+            <p className="bg-[#5d3ea8] text-white border rounded-md py-1 px-4 cursor-pointer">
+              Voltar
+            </p>
+          </Link>
+        )}
       </div>
     </form>
   );
