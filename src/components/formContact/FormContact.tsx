@@ -133,11 +133,13 @@ const FormContact = () => {
         >
           {sendingSuccessful ? "Enviado" : "Enviar"}
         </button>
-        <Link href={"/"}>
-          <p className="bg-[#5d3ea8] text-white border rounded-md py-1 px-4 cursor-pointer">
-            Voltar
-          </p>
-        </Link>
+        {!sendingSuccessful && (
+          <Link href={"/"}>
+            <p className="bg-[#5d3ea8] text-white border rounded-md py-1 px-4 cursor-pointer">
+              Voltar
+            </p>
+          </Link>
+        )}
       </div>
     </form>
   );
