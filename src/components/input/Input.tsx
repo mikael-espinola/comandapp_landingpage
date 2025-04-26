@@ -10,6 +10,7 @@ type TInput = {
   value: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
   required: boolean;
+  name: string;
 };
 
 const Input = ({
@@ -20,6 +21,7 @@ const Input = ({
   hasLabel,
   value,
   onChange,
+  name,
   required = true,
 }: TInput) => {
   return (
@@ -37,6 +39,7 @@ const Input = ({
         className="w-full border p-2 rounded-md outline-offset-5 my-1"
         onChange={onChange}
         required={required}
+        name={name}
       />
     </div>
   );
